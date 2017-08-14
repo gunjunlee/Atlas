@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+           table{
+              position:absolute;
+              top: 20px;
+              left:20px;
+           }
+           .box{
+              position:relative;
+              margin: 10px;
+           }
+           #target{
+                width: 500px;
+                height: 500px;
+
+                background-color: #808080;
+            }
+           #table_1{
+                border-collapse: collapse;
+                margin:10px;
+                float: left;
+            }
+           #td_1, #th_1{
+                padding:10px;
+                border:1px solid gray;
+            }
+           #td_2{
+                margin-left:50px;
+                top:50%;
+              left:50%;
+            }
+        </style>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/li$
+        <script src="/socket.io/socket.io.js"></script>
+
+    </head>
+    <body>
+
+      <table>
+         <tr>
+           <td id="target" class="box">
+
+             <div id="zone_joystick"></div>
+
+           </td>
+           <td id="target">
+           </td>
+         </tr>
+      </table>
+
+    </body>
+                <script type="text/javascript" >
+                        !function(t){if("object"==typeof exports&&"undefined"!=$
+                </script>
+                <script type="text/javascript">
+                    var options = {
+                            zone: document.getElementById('zone_joystick'),
+                            mode : 'static',
+                            color: "blue",
+                            position : {
+                              top : '50%',
+                              left : '50%'
+                            }
+                        };
+                    var manager = nipplejs.create(options);
+                var dbl_click=0;
+        var socket = io.connect('http://ec2-52-78-148-176.ap-northeast-2.comput$
+
+        socket.on('Server', function (data) {
+            socket.emit('Client', 'Client connected');
+        });
+
+        function dbl_click_func(event){
+                if(dbl_click==1) dbl_click=0;
+                else dbl_click=1;
+        };
+
+        var t = document.getElementById('target');
+        function handler(event){
+            document.getElementById('elemclientx').innerHTML = event.clientX;
+            document.getElementById('elemclienty').innerHTML = event.clientY;
+        }
+
+
+
+        t.addEventListener('dblclick', dbl_click_func);
+        t.addEventListener('mousemove', handler);
+        //t.addEventListener('mousemove', handler);
+        manager.on('move', function(evt, nipple){
+                          var joystick_val =  nipple.distance;
+                          var joystick_angle = nipple.angle.radian;
+                          var x=joystick_val * Math.cos(joystick_angle);
+                          var y=joystick_val * Math.sin(joystick_angle);
+                          socket.emit('mouseClick', x+' '+y+' '+dbl_click+"\n");
+                        });
+        manager.on('end', function(evt, nipple){
+          socket.emit('mouseClick', '0'+' '+'0'+' '+dbl_click+"\n");
+        });
+        </script>
+</html>
+
+
